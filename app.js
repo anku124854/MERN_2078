@@ -1,3 +1,4 @@
+const fs =require("fs")
 require("dotenv").config()
 const express = require("express")
 const connectDatabase = require("./database")
@@ -65,9 +66,27 @@ app.get("/blog", async(req, res) =>{     // create get API
     });
 });
 //single get app
-app.get("/blog/:id",(req,res)  => {
+app.get("/blog/:id", (req, res)  => {
     Console.log("Single Blog hitted successfully")   
    });
+
+app.delete("/blog/:id", async (req, res) =>{
+    const {id} = req.params;
+    const blog = await Blog.findById(id);
+    const imageName = blog.image;
+    
+    fs.unlink('storage/${imgaeName}', (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+        console.log("File deleted successfully...");
+    }
+});
+await   Blog.findByIdAndDelete(id);
+res.status(200).json({
+    msg : "Blog deleted successfully..."
+ });
+});
 
 app.use(express.static("./storage"));
 
